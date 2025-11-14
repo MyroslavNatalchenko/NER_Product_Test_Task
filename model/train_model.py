@@ -14,7 +14,7 @@ from seqeval.metrics import precision_score, recall_score, f1_score
 # System | Model settings
 CONLL_TRAIN_FILE = "../CONLL_data_formater/ready_for_training_data/train_data_59_pages_formatted.txt"
 MODEL_CHECKPOINT = "tner/roberta-large-ontonotes5"  # dslim/bert-base-NER
-MODEL_OUTPUT_PATH = "../ner_model_transformers_EPOCHS10_BATCHES16"
+MODEL_OUTPUT_PATH = "../ner_model_transformers"
 
 # Training parameters
 TRAIN_EPOCHS = 5

@@ -6,13 +6,9 @@ import torch
 import pandas as pd
 import json  # <--- IMPORT JSON
 
-# --- Functions (unchanged) ---
-
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
-
 def fetch_page_text(url: str) -> str | None:
-    # ... (code unchanged) ...
     headers = {'User-Agent': USER_AGENT}
     try:
         response = requests.get(url, headers=headers, timeout=10)
@@ -34,7 +30,6 @@ def fetch_page_text(url: str) -> str | None:
 
 @st.cache_resource
 def load_hf_pipeline(model_path: str):
-    # ... (code unchanged, this function is correct) ...
     if torch.backends.mps.is_available():
         device = torch.device("mps")
     elif torch.cuda.is_available():
@@ -62,7 +57,6 @@ def load_hf_pipeline(model_path: str):
 
 
 def extract_products(text: str, ner_pipeline) -> list[str]:
-    # ... (code unchanged) ...
     try:
         results = ner_pipeline(text)
         products = []
@@ -76,15 +70,12 @@ def extract_products(text: str, ner_pipeline) -> list[str]:
         return ["! ANALYSIS ERROR !"]
 
 
-# --- CONSTANTS (unchanged) ---
 STR_FAILED = "--- (Failed to load page) ---"
 STR_NO_PRODUCTS = "--- (No products found) ---"
 STR_ERROR = "! ANALYSIS ERROR !"
 
-
 @st.cache_data
 def process_all_urls(csv_path: str, model_path: str):
-    # ... (code unchanged) ...
     try:
         ner_pipeline = load_hf_pipeline(model_path)
     except Exception as e:
@@ -126,15 +117,13 @@ def process_all_urls(csv_path: str, model_path: str):
     return pd.DataFrame(results_list)
 
 
-# --- APPLICATION INTERFACE ---
-
 st.set_page_config(layout="wide")
 st.title("🛍️ Batch Product Analyzer")
 st.markdown("This tool will analyze **all** URLs from the `URL_list.csv` file and show the results.")
 
-MODEL_PATH = "../ner_model_transformers_EPOCHS10_BATCHES16"
+MODEL_PATH = "../ner_model_transformers"
 CSV_PATH = "../URL_list.csv"
-METRICS_FILE_PATH = "product_extraction_results_5_16.json"  # <-- DEFINE METRICS FILENAME
+METRICS_FILE_PATH = "batch_analysis_metrics.json"
 
 if st.button(f"🚀 Start Full Analysis of {CSV_PATH}"):
 
@@ -143,7 +132,6 @@ if st.button(f"🚀 Start Full Analysis of {CSV_PATH}"):
     if results_df is not None:
         st.success("✅ Analysis complete!")
 
-        # --- Metrics Section (unchanged) ---
         is_failed = results_df["Found Products"].isin([STR_FAILED, STR_ERROR])
         is_no_products = results_df["Found Products"] == STR_NO_PRODUCTS
         is_found = ~is_failed & ~is_no_products
@@ -168,7 +156,6 @@ if st.button(f"🚀 Start Full Analysis of {CSV_PATH}"):
         )
         st.markdown("---")
 
-        # --- START: NEW CODE TO SAVE METRICS ---
         metrics_data = {
             "total_urls_analyzed": num_total_urls,
             "working_pages": num_working_pages,
@@ -181,16 +168,13 @@ if st.button(f"🚀 Start Full Analysis of {CSV_PATH}"):
             st.success(f"Metrics saved to {METRICS_FILE_PATH}")
         except Exception as e:
             st.error(f"Failed to save metrics file: {e}")
-        # --- END: NEW CODE TO SAVE METRICS ---
 
-        # --- Display tables (unchanged) ---
         st.markdown(f"### Pages Where Products Were Found ({num_products_found} URLs):")
         st.dataframe(found_products_df, width='stretch', height=300)
         st.markdown(f"### Full Analysis Results (All {num_total_urls} URLs):")
         st.dataframe(results_df, width='stretch', height=500)
 
 
-        # --- Download button (unchanged) ---
         @st.cache_data
         def convert_df_to_csv(df):
             return df.to_csv(index=False).encode('utf-8')
@@ -200,7 +184,7 @@ if st.button(f"🚀 Start Full Analysis of {CSV_PATH}"):
         st.download_button(
             label="📥 Download Full Results as CSV",
             data=csv_data,
-            file_name="product_extraction_results_5_16.csv",
+            file_name="product_extraction_results.csv",
             mime="text/csv",
         )
 else:

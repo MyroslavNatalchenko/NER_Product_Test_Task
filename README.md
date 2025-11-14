@@ -1,4 +1,10 @@
-1.  Gathering training data
+# Working prototype
+
+https://huggingface.co/spaces/GlummyKitten/Evidantix_Test_Task
+
+# MINDS
+
+1. Gathering training data
 First, I went through the first 100 links in the list with a crawler. More than half of them turned out to be non-working. At first, I tried to extract data only from potentially significant parts of the pages (div, a, ...), but after checking the extracted information, I concluded that the most effective option was to extract information from the entire body or the entire page if the body was missing.
 After checking the information that was extracted in the final version and discarding the pages that were extracted but still did not contain meaningful information, only 29 pages remained. I decided that this amount would be too small for training the model, so I decided to go through the first 200 links in the file; after repeating the entire procedure, 59 pages remained
 
