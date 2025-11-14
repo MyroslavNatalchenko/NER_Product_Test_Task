@@ -1,0 +1,11 @@
+pandas
+requests
+beautifulsoup4
+streamlit
+matplotlib
+transformers
+tokenizers==0.21.0
+torch
+datasets
+scikit-learn
+accelerate
